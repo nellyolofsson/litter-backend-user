@@ -1,0 +1,120 @@
+# Deployment for Hello-World App
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth
+  labels:
+    app: auth 
+spec:
+# ändra till en 1 replica för att testa
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+        - name: auth
+          image: gitlab.lnu.se:5050/2dv013/student/team-2024-14-minccino/user-service/user-service:latest
+          env:
+            - name: DB_CONNECTION_STRING
+              value: mongodb://mongodb:27017/auth
+            - name: NODEJS_EXPRESS_PORT
+              value: "8088"
+            - name: SESSION_SECRET
+              valueFrom: 
+                secretKeyRef:
+                  name: my-secrets
+                  key: SESSION_SECRET
+            - name: RABBITMQ_URL
+              valueFrom: 
+                secretKeyRef:
+                  name: my-secrets
+                  key: RABBITMQ_URL
+            - name: GOOGLE_CLIENT_ID
+              valueFrom: 
+                secretKeyRef:
+                  name: my-secrets
+                  key: GOOGLE_CLIENT_ID
+            - name: GOOGLE_CLIENT_SECRET
+              valueFrom: 
+                secretKeyRef:
+                  name: my-secrets
+                  key: GOOGLE_CLIENT_SECRET
+            - name: GOOGLE_REDIRECT_URI # Testing wuth env variable
+              valueFrom: 
+                secretKeyRef:
+                  name: my-secrets
+                  key: GOOGLE_REDIRECT_URI
+            - name: JWT_ACCESS_LIFE
+              valueFrom: 
+                secretKeyRef:
+                  name: my-secrets
+                  key: JWT_ACCESS_LIFE
+            - name: REDIS_URL
+              value: redis://redis:6379
+            - name: SESSION_NAME
+              value: test  
+            - name: PRIVATE_KEY 
+              value: |
+                -----BEGIN RSA PRIVATE KEY-----
+                MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC21+45d/E9DYJF
+                r3Z6I6dJO3fGMiDYnJy+Fh/7hOZM7dO61ciJej6qmO5W48/NxNnoiSVp/8gpTHeb
+                ToiIIGsVoPwoxfU7KCujCgb3nHQivZjexJVtjR2zxPD3DaeZxJikdzgICt2LwVxN
+                Dg9kcacsMbdDS1jtUTOBls1eTcFGGc9MoMkzkJQJuHYoYIKijV6TulYDUZ+hpJqN
+                UJESb+iuyHP7R4X6NWCJXv3MrKtLcQB64o2Pwb+78jyOVCpeERu6+8FQnjXSc1iJ
+                yVHO+Dyj+MjNjhK8uCI7+urcwKUokTG03MGvv2XZO4+CmjqrFd6xWJzZsB7FJ3K8
+                4tmXxXtrAgMBAAECggEAFGk+esPc9kfPxx+zRic8wXwV/tYRvJyfEsk9gMJxQx05
+                iZ3b6RzwafLwiFqeFAZpnP/SYWbgXVvf7kJyE2ArFBsIizSuD5CIbobsCDA69rXb
+                nuKrG7OpISxXCf1IPG4p7BIy+xLbcIKBX0i2hyv40YIrRyPeJX/vFARVoLVlYgHH
+                B/8W97IpNb4FTtsrfhkQn2PqxhW2ZuJlM33ImUncPfN6F9lzcEkad++sLtA05FAg
+                d8ueyrcXu1elUzVvo4UmLlnmZYR/b6rnJsTowoz19ns+9ri9tCwlDzs/W9R1VCpd
+                vjmzmluht7IHUZuASfAoN5WJwo2sPrhhza2BiG6yIQKBgQDvoNzEaK+bmhttysV5
+                2x79noEyBaH8wangx+WsmgIhU1P1TjlFcYxGjdMmbJbhDL+6FvXENWWVE3mF3ATi
+                7WOQUvxpa8mZUVAs/hGNyi7Fz1No8hVdxZ6IZbqvrtKGU6kbWAmbwPl9Z5je8AaS
+                c/IHm2h6nYr1cSDf0SdS7uMG/QKBgQDDVeQ/V13KHDhKHpqIPqno2aF6+wJ60stp
+                7IEBDmM6RuPEZzpd3b3cOH89duLaLtctwkJ+8tu7KLQJUTc+uo2Sj+Kft6jogDc6
+                CznPy3rss9nzmASE7K2AzftqqRuRuRBUxGuCK0QECn0Ss8pRYqd5URUtka9Z4hII
+                a9OgxAe8hwKBgCPkHCzu4R6VPnZ7YIiX4VRrYT50yYZqG1+nkScBCkCjknezd7CH
+                CVOn+nBO42ph1nWw6q6wsL5bZGBATBsRI1CCnXvMwS1NmIykoUxzc/38x6l4WOrq
+                powXcJbPwIiOD04hKY9CoBvAYI1DtjhJVX7+L+/tmNqaTyo20YUCcs6hAoGBAK9a
+                nvFh69dxZ/LZ8F4Y6w0Wugkd5wb9zxAC+XhKQzfgxb3d8Z6sXjGhIlC6NkIpxI/W
+                kT1HpYwpqR2oJBETBd6pfodlJ6O43lskEr0A7RQrDKDKOlxd4A/+WhJRR2eVHB0M
+                y3pqfr+l7svoTNqs1q1o5bsnyqPE9+1JZw0ujcdnAoGAJvwR52R+4K2KDwco8MM8
+                SjadW9faeESmIaQOen0ITk264OfLw9Zg14x/ISHSV2Hl8E4czDrtXdAzBVQ/cI4A
+                kN/RIYCynHZm5QIeAaDXgtZBXs2bXHT4pC5Hp9qmz4RQSslemiommrMnhD4c7bUI
+                PJb1nsMVXe3eHXUzqSL4N+s=
+                -----END RSA PRIVATE KEY-----
+            - name: PUBLIC_KEY
+              value: |
+                -----BEGIN PUBLIC KEY-----
+                MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAttfuOXfxPQ2CRa92eiOn
+                STt3xjIg2JycvhYf+4TmTO3TutXIiXo+qpjuVuPPzcTZ6Iklaf/IKUx3m06IiCBr
+                FaD8KMX1OygrowoG95x0Ir2Y3sSVbY0ds8Tw9w2nmcSYpHc4CArdi8FcTQ4PZHGn
+                LDG3Q0tY7VEzgZbNXk3BRhnPTKDJM5CUCbh2KGCCoo1ek7pWA1GfoaSajVCREm/o
+                rshz+0eF+jVgiV79zKyrS3EAeuKNj8G/u/I8jlQqXhEbuvvBUJ410nNYiclRzvg8
+                o/jIzY4SvLgiO/rq3MClKJExtNzBr79l2TuPgpo6qxXesVic2bAexSdyvOLZl8V7
+                awIDAQAB
+                -----END PUBLIC KEY-----
+            - name: NODE_ENV
+              value: "production"
+          ports:
+            - containerPort: 8088
+      imagePullSecrets:
+        - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth
+spec:
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8088
+  selector:
+    app: auth
