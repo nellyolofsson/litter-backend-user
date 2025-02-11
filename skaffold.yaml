@@ -1,0 +1,26 @@
+apiVersion: skaffold/v4beta7
+kind: Config
+metadata:
+  name: auth
+build:
+  artifacts:
+    - image: gitlab.lnu.se:5050/2dv013/student/team-2024-14-minccino/user-service
+      docker:
+        dockerfile: Dockerfile.production
+manifests:
+  rawYaml:
+    - k8s/auth.yaml
+    - k8s/mongodb.yaml
+    - k8s/rabbitmq.yaml
+    - k8s/redis.yaml
+deploy:
+  kubectl: {}
+
+# Production profile
+# A slightly modyfied ingress configuration needed in production.
+profiles:
+- name: production
+  patches:
+  - op: replace 
+    path: /manifests/rawYaml/0  # JSON Pointer to ingress.yaml
+    #value: k8s/ingress.yaml  # The value for the ingressClassName field is added in this one
